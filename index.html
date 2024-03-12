@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #c7cfd7;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  .product {
+    margin-bottom: 20px;
+    background-color: #0d71c3;
+    border: 1px solid #0d71c3;
+    padding: 10px;
+    width: 300px;
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <select id="categorySelect">
+    <option value="">Select Category</option>
+  </select>
+  <button id="filterBtn">Filter</button>
+</div>
+
+<div id="filteredProducts"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  $.get("products.json", function(data) {
+    var categories = [];
+    data.products.forEach(function(product) {
+      product.categories.forEach(function(category) {
+        if (!categories.includes(category)) {
+          categories.push(category);
+          $("#categorySelect").append(`<option value="${category}">${category}</option>`);
+        }
+      });
+    });
+  });
+
+  $("#filterBtn").click(function() {
+    var selectedCategory = $("#categorySelect").val();
+    if (selectedCategory) {
+      $.get("products.json", function(data) {
+        var filteredProducts = data.products.filter(function(product) {
+          return product.categories.includes(selectedCategory);
+        });
+        var productsHTML = "";
+        filteredProducts.forEach(function(product) {
+          productsHTML += `<div>${product.name}</div>`;
+        });
+        $("#filteredProducts").html(productsHTML);
+      });
+    } else {
+      $("#filteredProducts").html("Please select a category.");
+    }
+  });
+});
+</script>
+
+</body>
+</html>
